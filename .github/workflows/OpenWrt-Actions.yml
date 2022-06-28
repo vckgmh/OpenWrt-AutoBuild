@@ -7,7 +7,7 @@
 # 参考 KFERMercer https://github.com/KFERMercer/OpenWrt-CI
 #
 #
-name: 自动编译OpenWrt固件(测试2)
+name: 自动编译OpenWrt固件
 
 on:
   repository_dispatch:
