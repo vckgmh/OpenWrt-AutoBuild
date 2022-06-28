@@ -1,0 +1,371 @@
+#
+#
+# 主要修改自 db-one https://github.com/db-one/OpenWrt-AutoBuild
+#
+# 参考 P3TERX https://github.com/P3TERX/Actions-OpenWrt
+# 参考 esirplayground https://github.com/esirplayground/AutoBuild-OpenWrt
+# 参考 KFERMercer https://github.com/KFERMercer/OpenWrt-CI
+#
+#
+name: 自动编译OpenWrt固件(测试2)
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: '编译OpenWrt固件-SSH远程：改为"ssh"打开SSH连接'
+        required: false
+        default: 'ssh-actions'
+
+# 定时触发编译(1,2,5,6,8,10,12,15,16,18,20,22,25,26,28,30早3点)
+#  schedule:
+#    - cron: 0 19 1,4,5,7,9,11,14,15,17,19,21,24,25,27,29,31 * *
+
+env:
+  TZ: Asia/Shanghai
+  GIT_USER_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
+  #  企业微信链接（没用到）
+  #  WECHAT_WORK_URL: ${{ secrets.WECHAT_WORK_URL }}
+  #  WECHAT_WORK_TOKEN: ${{ secrets.WECHAT_WORK_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    if: github.event.repository.owner.id == github.event.sender.id
+
+    name: 编译 ${{matrix.target}}
+    #   并发作业
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [Lean_x86_64]  #[Lean_x86_64,Lean_x86_64_Long]
+
+    steps:
+      - name: 准备完成
+        uses: actions/checkout@v2
+
+      - name: 查看服务器
+        run: |
+          echo  "---------------------------CPU信息------------------------------------------"
+          echo -e "CPU核心及版本信息：$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c)"
+          echo  "---------------------------------------------------------------------------"
+
+      - name: 配置环境变量
+        run: |
+          source "${GITHUB_WORKSPACE}/build/${{matrix.target}}/settings.ini"
+          echo "REPO_URL=${REPO_URL}" >> $GITHUB_ENV
+          echo "GITHUB_RELEASE=${GITHUB_RELEASE}" >> $GITHUB_ENV
+          echo "REPO_BRANCH=${REPO_BRANCH}" >> $GITHUB_ENV
+          echo "CONFIG_FILE=${CONFIG_FILE}" >> $GITHUB_ENV
+          echo "FIRMWARE_MESSAGE=${FIRMWARE_MESSAGE}" >> $GITHUB_ENV
+          echo "CUSTOM_SH=${CUSTOM_SH}" >> $GITHUB_ENV
+          echo "CACHE_BUILD=${CACHE_BUILD}" >> $GITHUB_ENV
+          echo "SSH_ACTIONS=${SSH_ACTIONS}" >> $GITHUB_ENV
+          echo "UPLOAD_FIRMWARE=${UPLOAD_FIRMWARE}" >> $GITHUB_ENV
+          echo "UPLOAD_ISO=${UPLOAD_ISO}" >> $GITHUB_ENV
+          echo "UPLOAD_QCOW2=${UPLOAD_QCOW2}" >> $GITHUB_ENV
+          echo "UPLOAD_VHDX=${UPLOAD_VHDX}" >> $GITHUB_ENV
+          echo "UPLOAD_VDI=${UPLOAD_VDI}" >> $GITHUB_ENV
+          echo "UPLOAD_VMDK=${UPLOAD_VMDK}" >> $GITHUB_ENV
+          echo "UPLOAD_IPK=${UPLOAD_IPK}" >> $GITHUB_ENV
+          echo "UPLOAD_CONFIG=${UPLOAD_CONFIG}" >> $GITHUB_ENV
+          echo "UPLOAD_WETRANSFER=${UPLOAD_WETRANSFER}" >> $GITHUB_ENV
+          echo "UPLOAD_RELEASE=${UPLOAD_RELEASE}" >> $GITHUB_ENV
+          echo "WECHAT_WORK_PUSH=${WECHAT_WORK_PUSH}" >> $GITHUB_ENV
+          echo "TELEGRAM_BOT=${TELEGRAM_BOT}" >> $GITHUB_ENV
+          echo "HOME=${GITHUB_WORKSPACE}/openwrt" >> $GITHUB_ENV
+          echo "WORKPATH=${GITHUB_WORKSPACE}/openwrt/build/${{matrix.target}}" >> $GITHUB_ENV
+
+      - name: 初始化系统环境
+        env:
+          #         接运行命令，而无需向用户请求输入
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          docker rmi `docker images -q`
+          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
+          sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* || true
+          sudo -E apt-get update
+          sudo -E apt-get -y install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pip qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
+          sudo -E apt-get -y autoremove --purge
+          sudo -E apt-get clean
+          sudo timedatectl set-timezone "$TZ"
+          sudo mkdir -p /workdir
+          sudo chown $USER:$GROUPS /workdir
+
+      - name: 下载${{matrix.target}}源码
+        working-directory: /workdir
+        run: |
+          echo " 系统空间      类型   总数  已用  可用 使用率"
+          df -hT $PWD
+          git clone -b $REPO_BRANCH --single-branch $REPO_URL openwrt
+          ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+          cd openwrt
+          COMMIT_DATE=$(git show -s --format="%ci")
+          COMMIT_HASH=$(git show -s --format="%H")
+          echo "COMMIT_DATE=${COMMIT_DATE}" >> $GITHUB_ENV
+          echo "COMMIT_HASH=${COMMIT_HASH}" >> $GITHUB_ENV
+          cd ..
+
+      - name: 缓存加速
+        uses: klever1988/cachewrtbuild@main
+        if: env.CACHE_BUILD == 'true'
+        with:
+          ccache: 'true'
+          prefix: ${{ github.workspace }}/openwrt
+
+      - name: 更新时区、编译时间
+        id: date
+        run: |
+          sudo timedatectl set-timezone "$TZ"
+          echo "::set-output name=status::success"
+          echo "FILE_TIME=$(date +"%m-%d %H.%M")" >> $GITHUB_ENV
+          echo "FILE_TIME1=$(date "+%Y年%m月%d日-%H点%M分")" >> $GITHUB_ENV
+          echo "FILE_TIME2=$(date "+%Y%m%d-%H%M")" >> $GITHUB_ENV
+          echo "编译开始时间..."
+          START_TIME=`date +'%Y-%m-%d %H:%M:%S'`
+          echo "START_SECONDS=$(date --date="$START_TIME" +%s)" >> $GITHUB_ENV
+
+      - name: 加载源,定制文件并生成自定义配置
+        run: |
+          echo "复制配置文件到源码目录..."
+          cp -Rf `find ./ -maxdepth 1 -type d ! -path './openwrt' ! -path './'` openwrt
+          cd openwrt
+          echo "执行脚本"
+          if [ -f "${WORKPATH}/$CUSTOM_SH" ]; then
+          (
+            chmod +x ${WORKPATH}/$CUSTOM_SH
+            /bin/bash "${WORKPATH}/$CUSTOM_SH"
+          )
+          fi  
+          echo "复制文件..."
+          if [ -n "$(ls -A "${WORKPATH}/files" 2>/dev/null)" ]; then
+           cp -rf ${WORKPATH}/files files
+           chmod -R 755 ${WORKPATH}/files/* ./
+          fi
+          if [ -n "$(ls -A "${WORKPATH}/sources" 2>/dev/null)" ]; then
+           cp -Rf ${WORKPATH}/sources/* ./
+          fi
+          echo "写入配置文件..."
+          mv ${WORKPATH}/$CONFIG_FILE .config
+          make defconfig
+
+      - name: SSH远程连接服务器
+        uses: P3TERX/ssh2actions@v1.0.0
+        if: env.SSH_ACTIONS == 'true' || (github.event.inputs.ssh == 'ssh' && github.event.inputs.ssh  != 'false')
+        env:
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+
+      - name: 输出编译信息
+        run: |
+          cd openwrt
+          echo " 系统空间      类型   总数  已用  可用 使用率"
+          df -hT $PWD
+          echo
+          echo "=========================================="
+          grep -i CONFIG_PACKAGE_luci-app .config | grep  -v \# > Plug-in
+          grep -i CONFIG_PACKAGE_luci-theme .config | grep  -v \# >> Plug-in
+          sed -i '/INCLUDE/d' Plug-in > /dev/null 2>&1
+          sed -i 's/CONFIG_PACKAGE_/、/g' Plug-in
+          sed -i '/Transparent_Proxy/d' Plug-in > /dev/null 2>&1
+          sed -i 's/=y/\ /g' Plug-in
+          awk '$0=NR$0' Plug-in > Plug-2
+          awk '{print "	" $0}' Plug-2 > Plug-in    
+          echo
+          echo
+          echo "	      已选插件列表"
+          cat Plug-in
+          rm -rf {Plug-in,Plug-2}  
+          echo
+          echo "=========================================="
+          echo
+          echo
+          echo "输出完整插件信息..."
+          echo
+          echo
+          cat .config
+
+      - name: 下载固件包
+        run: |
+          cd openwrt && make download -j8
+          find dl -size -1024c -exec ls -l {} \;
+          find dl -size -1024c -exec rm -f {} \;
+          make download -j8
+
+      - name: 开始编译固件
+        id: compile
+        run: |
+          cd openwrt
+          echo -e "$(($(nproc)+1)) 线程编译"
+          make -j$(($(nproc)+1)) || make -j1 V=s
+
+      - name: 检查空间使用情况
+        run: |
+          echo "=========================================="
+          echo "----------------空间使用-------------------"
+          echo "=========================================="
+          echo " 系统空间      类型   总数  已用  可用 使用率"
+          df -hT
+          echo "=========================================="
+          du -h --max-depth=1 openwrt/ --exclude=build_dir --exclude=bin
+          du -h --max-depth=1 openwrt/build_dir
+          du -h --max-depth=1 openwrt/bin
+
+      - name: 整理固件文件
+        id: organizer
+        run: |
+          mkdir -p ./artifact/firmware
+          mkdir -p ./artifact/liveCD
+          mkdir -p ./artifact/pvekvm
+          mkdir -p ./artifact/hyperv
+          mkdir -p ./artifact/virtualbox
+          mkdir -p ./artifact/vmware
+          mkdir -p ./artifact/package
+          mkdir -p ./artifact/buildinfo
+          cp -rf openwrt/.config ./artifact/buildinfo/${{matrix.target}}.config
+          rm -rf $(find openwrt/bin/targets/ -type d -name "packages")
+          cp -rf $(find openwrt/bin/packages/ -type f -name "*.ipk") ./artifact/package/
+          cp -rf $(find openwrt/bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
+          cp -rf $(find openwrt/bin/targets/ -type f -name "*combined*img*" -o -name "*sha256sums") ./artifact/firmware/
+          cp -rf $(find openwrt/bin/targets/ -type f -name "*image*iso*" -o -name "*sha256sums") ./artifact/liveCD/ || true
+          cp -rf $(find openwrt/bin/targets/ -type f -name "*combined*qcow2*" -o -name "*sha256sums") ./artifact/pvekvm/ || true
+          cp -rf $(find openwrt/bin/targets/ -type f -name "*combined*vhdx*" -o -name "*sha256sums") ./artifact/hyperv/ || true
+          cp -rf $(find openwrt/bin/targets/ -type f -name "*combined*vdi*" -o -name "*sha256sums") ./artifact/virtualbox/ || true
+          cp -rf $(find openwrt/bin/targets/ -type f -name "*combined*vmdk*" -o -name "*sha256sums") ./artifact/vmware/ || true
+          echo "::set-output name=status::success"
+          echo "编译完成时间..."
+          START_SECONDS=${{ env.START_SECONDS }}
+          END_TIME=`date +'%Y-%m-%d %H:%M:%S'`
+          END_SECONDS=$(date --date="$END_TIME" +%s)
+          SECONDS=$((END_SECONDS-START_SECONDS))
+          HOUR=$(( $SECONDS/3600 )) && MIN=$(( ($SECONDS-${HOUR}*3600)/60 )) && SEC=$(( $SECONDS-${HOUR}*3600-${MIN}*60 ))
+          echo "BUILD_TIME=${HOUR}时${MIN}分${SEC}秒" >> $GITHUB_ENV
+
+      - name: 上传固件文件
+        if: steps.organizer.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true'
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_firmware_${{matrix.target}}_${{ env.FILE_TIME }}
+          path: ./artifact/firmware/
+
+      - name: 上传LiveCD镜像文件
+        if: steps.organizer.outputs.status == 'success' && env.UPLOAD_ISO == 'true'
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_liveCD_${{matrix.target}}_${{ env.FILE_TIME }}
+          path: ./artifact/liveCD/
+
+      - name: 上传PVE/KVM镜像文件
+        if: steps.organizer.outputs.status == 'success' && env.UPLOAD_QCOW2 == 'true'
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_pvekvm_${{matrix.target}}_${{ env.FILE_TIME }}
+          path: ./artifact/pvekvm/
+
+      - name: 上传Hyper-V镜像文件
+        if: steps.organizer.outputs.status == 'success' && env.UPLOAD_VHDX == 'true'
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_hyperv_${{matrix.target}}_${{ env.FILE_TIME }}
+          path: ./artifact/hyperv/
+
+      - name: 上传VirtualBox镜像文件
+        if: steps.organizer.outputs.status == 'success' && env.UPLOAD_VDI == 'true'
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_virtualbox_${{matrix.target}}_${{ env.FILE_TIME }}
+          path: ./artifact/virtualbox/
+
+      - name: 上传VMware镜像文件
+        if: steps.organizer.outputs.status == 'success' && env.UPLOAD_VMDK == 'true'
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_vmware_${{matrix.target}}_${{ env.FILE_TIME }}
+          path: ./artifact/vmware/
+
+      - name: 上传插件包文件
+        if: steps.organizer.outputs.status == 'success' && env.UPLOAD_IPK == 'true'
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_package_${{matrix.target}}_${{ env.FILE_TIME }}
+          path: ./artifact/package/
+
+      - name: 上传固件信息
+        if: steps.organizer.outputs.status == 'success' && env.UPLOAD_CONFIG == 'true'
+        uses: actions/upload-artifact@v2
+        with:
+          name: OpenWrt_buildinfo_${{matrix.target}}_${{ env.FILE_TIME }}
+          path: ./artifact/buildinfo/
+
+      - name: 上传固件到 WeTransfer
+        if: steps.organizer.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true'
+        run: |
+          curl -fsSL git.io/file-transfer | sh
+          ./transfer wet -s -p 16 --no-progress ./artifact/firmware/ 2>&1 | tee wetransfer.log
+          echo "WETRANSFER_URL=$(cat wetransfer.log | grep https | cut -f3 -d" ")" >> $GITHUB_ENV
+          sed -i "s/Download Link/WeTransfer/g" wetransfer.log
+          echo "::warning file=WeTransfer::$(cat wetransfer.log | grep https)"
+
+      - name: 自动发布固件到 Releases
+        uses: ncipollo/release-action@v1
+        if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
+        with:
+          name: ${{ env.FILE_TIME1 }} 「 ${{ env.FIRMWARE_MESSAGE }} 」固件
+          tag: ${{ env.FILE_TIME2 }}-${{matrix.target}}
+          token: ${{ secrets.GIT_USER_TOKEN }}
+          body: |
+            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            ★  编译前的最后源码更新 : ${{ env.REPO_URL }}/commit/${{ env.COMMIT_HASH }}
+            ★  编译前的最后更新时间 : ${{ env.COMMIT_DATE }}
+            ★  分支 : ${{ env.REPO_BRANCH }}
+            ★  感谢源码作者无私分享！
+
+            🎈 编译时间：${{ env.FILE_TIME1 }}
+
+            ⏰ 编译用时：${{ env.BUILD_TIME }}
+
+            🎉 [ ${{ env.FIRMWARE_MESSAGE }} ]固件下载
+
+            ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+            ➤ WeTransfer： ${{ env.WETRANSFER_URL }}
+
+            WeTransfer链接有效期为7天，无需注册直接下载
+
+            ===============================================
+          artifacts: "./artifact/firmware/*"
+
+      - name: 删除运行记录
+        uses: Mattraks/delete-workflow-runs@v2
+        with:
+          repository: ${{ github.repository }}
+          retain_days: 30
+          keep_minimum_runs: 6
+          token: ${{ secrets.GIT_USER_TOKEN }}
+
+      - name: 删除自动发布的旧固件
+        uses: dev-drprasad/delete-older-releases@v0.2.0
+        if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
+        with:
+          keep_latest: 30         #保留多少个releases不删除
+          delete_tags: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
+
+      - name: 编译成功信息通知-Telegram
+        if: steps.organizer.outputs.status == 'success' && env.TELEGRAM_BOT == 'true'
+        run: |
+          curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=您的${{ env.FIRMWARE_MESSAGE }}固件成功编译完成了！
+          
+            🎈 编译时间：${{ env.FILE_TIME1 }}
+          
+            ⏰ 编译用时：${{ env.BUILD_TIME }}
+          
+            🎉 发布地址：${{ env.GITHUB_RELEASE }}
+          
+            ⛄ WeTransfer：${{ env.WETRANSFER_URL }}
+          
+            🌴 固件已经编译完成 🎈！！！" >/dev/null 2>&1 && echo "ok..."
