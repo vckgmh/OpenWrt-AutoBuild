@@ -156,7 +156,7 @@ CONFIG_TARGET_ROOTFS_PARTSIZE=300
 
 # ipv6支持
 CONFIG_PACKAGE_ipv6helper=y
-# CONFIG_PACKAGE_dnsmasq_full_dhcpv6 is not set
+CONFIG_PACKAGE_dnsmasq_full_dhcpv6=y
 
 # 主题
 CONFIG_PACKAGE_luci-theme-material=y
