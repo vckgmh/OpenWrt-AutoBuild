@@ -242,9 +242,6 @@ CONFIG_PACKAGE_openssh-sftp-server=y
 # 第三方插件
 CONFIG_PACKAGE_luci-app-argon-config=y
 
-# 去掉coremark跑分
-# CONFIG_PACKAGE_coremark is not set
-
 EOF
 
 sed -i 's/^[ \t]*//g' ./.config
