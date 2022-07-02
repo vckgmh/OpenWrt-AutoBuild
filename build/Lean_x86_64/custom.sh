@@ -17,7 +17,7 @@ git clone https://github.com/jerrykuku/luci-app-argon-config.git package/vckgmh-
 git clone https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom.git package/vckgmh-packages/luci-theme-infinityfreedom
 
 # neobird 主题
-git clone https://github.com/thinktip/luci-theme-neobird.git package/vckgmh-packages/luci-theme-neobird
+# git clone https://github.com/thinktip/luci-theme-neobird.git package/vckgmh-packages/luci-theme-neobird
 
 cat feeds.conf.default
 
@@ -159,13 +159,12 @@ CONFIG_PACKAGE_ipv6helper=y
 CONFIG_PACKAGE_dnsmasq_full_dhcpv6=y
 
 # 主题
-CONFIG_PACKAGE_luci-theme-material=y
-CONFIG_PACKAGE_luci-theme-netgear=y
+# CONFIG_PACKAGE_luci-theme-material is not set
+# CONFIG_PACKAGE_luci-theme-netgear is not set
 
 # 第三方主题
 CONFIG_PACKAGE_luci-theme-argon=y
 CONFIG_PACKAGE_luci-theme-infinityfreedom=y
-CONFIG_PACKAGE_luci-theme-neobird=y
 
 # passwall
 CONFIG_PACKAGE_luci-app-passwall=y
