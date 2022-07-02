@@ -242,6 +242,12 @@ CONFIG_PACKAGE_openssh-sftp-server=y
 # 第三方插件
 CONFIG_PACKAGE_luci-app-argon-config=y
 
+# uHTTPd Web服务器
+CONFIG_PACKAGE_luci-app-uhttpd=y
+
+# Web管理页面设置
+CONFIG_PACKAGE_luci-app-webadmin=y
+
 EOF
 
 sed -i 's/^[ \t]*//g' ./.config
