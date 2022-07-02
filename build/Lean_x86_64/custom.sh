@@ -200,6 +200,9 @@ CONFIG_PACKAGE_luci-app-arpbind=y
 #支持计划重启
 CONFIG_PACKAGE_luci-app-autoreboot=y
 
+# 动态域名DNS
+CONFIG_PACKAGE_luci-app-ddns=y
+
 #磁盘管理
 CONFIG_PACKAGE_luci-app-diskman=y
 # 新型的写时复制 (COW)
