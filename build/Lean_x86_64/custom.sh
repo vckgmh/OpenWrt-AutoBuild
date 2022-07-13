@@ -22,9 +22,10 @@ git clone https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom.git pac
 cat feeds.conf.default
 
 # 更新并安装源
-./scripts/feeds clean
+# ./scripts/feeds clean
 ./scripts/feeds update -a
-./scripts/feeds install -a -f
+# ./scripts/feeds install -a -f
+./scripts/feeds install -a
 
 # 移除lede源码自带的argon主题
 rm -rf feeds/luci/themes/luci-theme-argon
