@@ -245,9 +245,6 @@ CONFIG_PACKAGE_luci-app-argon-config=y
 # uHTTPd Web服务器
 CONFIG_PACKAGE_luci-app-uhttpd=y
 
-CONFIG_PACKAGE_kmod-igb=n
-CONFIG_PACKAGE_kmod-igb-intel=y
-
 EOF
 
 sed -i 's/^[ \t]*//g' ./.config
