@@ -64,19 +64,19 @@ CONFIG_TARGET_ROOTFS_PARTSIZE=300
 # CONFIG_TARGET_IMAGES_GZIP is not set
 
 # LiveCD镜像
-# CONFIG_ISO_IMAGES is not set
+CONFIG_ISO_IMAGES=y
 
 # PVE/KVM 镜像
-# CONFIG_QCOW2_IMAGES is not set
+CONFIG_QCOW2_IMAGES=y
 
 # VirtualBox 镜像
-# CONFIG_VDI_IMAGES is not set
+CONFIG_VDI_IMAGES=y
 
 # VMware 镜像
-# CONFIG_VMDK_IMAGES is not set
+CONFIG_VMDK_IMAGES=y
 
 # Hyper-V 镜像
-# CONFIG_VHDX_IMAGES is not set
+CONFIG_VHDX_IMAGES=y
 
 # 去掉默认选中的插件开始
 # 访问时间控制
