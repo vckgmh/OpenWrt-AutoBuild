@@ -336,7 +336,7 @@ jobs:
             WeTransfer链接有效期为7天，无需注册直接下载
 
             ===============================================
-          artifacts: "./artifact/firmware/*"
+          artifacts: "./artifact/firmware/*,./artifact/liveCD/*iso*,./artifact/pvekvm/*qcow2,./artifact/hyperv/*vhdx,./artifact/virtualbox/*vdi,./artifact/vmware/*vmdk"
 
       - name: 删除运行记录
         uses: Mattraks/delete-workflow-runs@v2
