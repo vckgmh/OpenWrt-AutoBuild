@@ -248,6 +248,7 @@ CONFIG_PACKAGE_luci-app-uhttpd=y
 # Docker容器
 CONFIG_PACKAGE_luci-app-dockerman=y
 
+# kodexplorer可道云
 CONFIG_PACKAGE_luci-app-kodexplorer=y
 
 EOF
