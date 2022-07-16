@@ -248,6 +248,8 @@ CONFIG_PACKAGE_luci-app-uhttpd=y
 # Docker容器
 CONFIG_PACKAGE_luci-app-dockerman=y
 
+CONFIG_PACKAGE_luci-app-kodexplorer=y
+
 EOF
 
 sed -i 's/^[ \t]*//g' ./.config
