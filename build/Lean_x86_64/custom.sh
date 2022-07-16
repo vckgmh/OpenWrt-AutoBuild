@@ -245,6 +245,15 @@ CONFIG_PACKAGE_luci-app-argon-config=y
 # uHTTPd Web服务器
 CONFIG_PACKAGE_luci-app-uhttpd=y
 
+# 阿里云盘 FUSE 磁盘挂载
+CONFIG_PACKAGE_luci-app-aliyundrive-fuse=y
+
+# 阿里云盘 WebDAV
+CONFIG_PACKAGE_luci-app-aliyundrive-webdav=y
+
+# Docker容器
+CONFIG_PACKAGE_luci-app-docker=y
+
 EOF
 
 sed -i 's/^[ \t]*//g' ./.config
