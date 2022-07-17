@@ -252,7 +252,7 @@ CONFIG_PACKAGE_luci-app-dockerman=y
 CONFIG_PACKAGE_luci-app-kodexplorer=y
 
 # 阿里云盘webdav
-CONFIG_PACKAGE_luci-app-aliyundrive-webdav
+CONFIG_PACKAGE_luci-app-aliyundrive-webdav=y
 
 EOF
 
