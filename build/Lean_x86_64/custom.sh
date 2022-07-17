@@ -251,6 +251,9 @@ CONFIG_PACKAGE_luci-app-dockerman=y
 # kodexplorer可道云
 CONFIG_PACKAGE_luci-app-kodexplorer=y
 
+# 阿里云盘webdav
+CONFIG_PACKAGE_luci-app-aliyundrive-webdav
+
 EOF
 
 sed -i 's/^[ \t]*//g' ./.config
