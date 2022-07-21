@@ -254,6 +254,8 @@ CONFIG_PACKAGE_luci-app-kodexplorer=y
 # 阿里云盘webdav
 CONFIG_PACKAGE_luci-app-aliyundrive-webdav=y
 
+CONFIG_PACKAGE_luci-app-aliyundrive-fuse=y
+
 EOF
 
 sed -i 's/^[ \t]*//g' ./.config
