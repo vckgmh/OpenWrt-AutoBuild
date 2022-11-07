@@ -251,10 +251,8 @@ CONFIG_PACKAGE_luci-app-dockerman=y
 # kodexplorer可道云
 CONFIG_PACKAGE_luci-app-kodexplorer=y
 
-# 阿里云盘webdav
-CONFIG_PACKAGE_luci-app-aliyundrive-webdav=y
-
-CONFIG_PACKAGE_luci-app-aliyundrive-fuse=y
+# ZeroTier内网穿透
+CONFIG_PACKAGE_luci-app-zerotier=y
 
 EOF
 
