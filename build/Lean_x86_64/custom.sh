@@ -8,7 +8,7 @@ sed -i '$a src-git passwall_luci https://github.com/xiaorouji/openwrt-passwall;l
 # sed -i '$a src-git infinityfreedom https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom.git' feeds.conf.default
 
 # 针对 LEDE 项目拉取 argon 主题
-git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/vckgmh-packages/luci-theme-argon
+# git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/vckgmh-packages/luci-theme-argon
 
 # luci-app-argon-config 插件
 git clone https://github.com/jerrykuku/luci-app-argon-config.git package/vckgmh-packages/luci-app-argon-config
@@ -28,7 +28,7 @@ cat feeds.conf.default
 ./scripts/feeds install -a
 
 # 移除lede源码自带的argon主题
-rm -rf feeds/luci/themes/luci-theme-argon
+# rm -rf feeds/luci/themes/luci-theme-argon
 
 # 自定义定制选项
 NET="package/base-files/files/bin/config_generate"
@@ -239,14 +239,8 @@ CONFIG_PACKAGE_vim-full=y
 
 CONFIG_PACKAGE_openssh-sftp-server=y
 
-# 第三方插件
-CONFIG_PACKAGE_luci-app-argon-config=y
-
 # uHTTPd Web服务器
 CONFIG_PACKAGE_luci-app-uhttpd=y
-
-# kodexplorer可道云
-CONFIG_PACKAGE_luci-app-kodexplorer=y
 
 # ZeroTier内网穿透
 CONFIG_PACKAGE_luci-app-zerotier=y
