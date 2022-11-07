@@ -11,7 +11,7 @@ sed -i '$a src-git passwall_luci https://github.com/xiaorouji/openwrt-passwall;l
 # git clone -b 18.06 https://github.com/jerrykuku/luci-theme-argon.git package/vckgmh-packages/luci-theme-argon
 
 # luci-app-argon-config 插件
-git clone https://github.com/jerrykuku/luci-app-argon-config.git package/vckgmh-packages/luci-app-argon-config
+# git clone https://github.com/jerrykuku/luci-app-argon-config.git package/vckgmh-packages/luci-app-argon-config
 
 # infinityfreedom 主题
 git clone https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom.git package/vckgmh-packages/luci-theme-infinityfreedom
@@ -162,9 +162,8 @@ CONFIG_PACKAGE_dnsmasq_full_dhcpv6=y
 # 主题
 # CONFIG_PACKAGE_luci-theme-material is not set
 # CONFIG_PACKAGE_luci-theme-netgear is not set
-
+# CONFIG_PACKAGE_luci-theme-argon is not set
 # 第三方主题
-CONFIG_PACKAGE_luci-theme-argon=y
 CONFIG_PACKAGE_luci-theme-infinityfreedom=y
 
 # passwall
@@ -241,6 +240,9 @@ CONFIG_PACKAGE_openssh-sftp-server=y
 
 # uHTTPd Web服务器
 CONFIG_PACKAGE_luci-app-uhttpd=y
+
+# ZeroTier内网穿透
+CONFIG_PACKAGE_luci-app-zerotier=y
 
 EOF
 
