@@ -242,9 +242,6 @@ CONFIG_PACKAGE_openssh-sftp-server=y
 # uHTTPd Web服务器
 CONFIG_PACKAGE_luci-app-uhttpd=y
 
-# ZeroTier内网穿透
-CONFIG_PACKAGE_luci-app-zerotier=y
-
 EOF
 
 sed -i 's/^[ \t]*//g' ./.config
