@@ -26,6 +26,8 @@ cat feeds.conf.default
 ./scripts/feeds update -a
 # ./scripts/feeds install -a -f
 ./scripts/feeds install -a
+./scripts/feeds update -a
+./scripts/feeds install -a
 
 # 移除lede源码自带的argon主题
 # rm -rf feeds/luci/themes/luci-theme-argon
