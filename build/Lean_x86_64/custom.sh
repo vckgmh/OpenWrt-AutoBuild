@@ -252,6 +252,12 @@ CONFIG_PACKAGE_luci-app-uhttpd=y
 # ZeroTier内网穿透
 CONFIG_PACKAGE_luci-app-zerotier=y
 
+# KOD可道云私人网盘
+CONFIG_PACKAGE_luci-app-kodexplorer=y
+
+# docker容器
+CONFIG_PACKAGE_luci-app-dockerman=y
+
 EOF
 
 sed -i 's/^[ \t]*//g' ./.config
