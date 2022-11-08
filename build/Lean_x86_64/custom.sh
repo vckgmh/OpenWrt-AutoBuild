@@ -96,6 +96,8 @@ CONFIG_VHDX_IMAGES=y
 # 动态域名 DNS
 # CONFIG_PACKAGE_luci-app-ddns is not set
 
+# 磁盘管理
+# CONFIG_PACKAGE_luci-app-diskman is not set
 # 新型的写时复制 (COW)
 # CONFIG_PACKAGE_luci-app-diskman_INCLUDE_btrfs_progs is not set
 # 用于列出所有可用块设备的信息
@@ -123,6 +125,8 @@ CONFIG_VHDX_IMAGES=y
 # CONFIG_PACKAGE_luci-app-turboacc is not set
 # BBR拥塞控制算法提升TCP网络性能
 # CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_BBR_CCA is not set
+# pdnsd
+# CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_PDNSD is not set
 # Shortcut-FE 流量分载
 # CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_SHORTCUT_FE_CM is not set
 
@@ -170,7 +174,8 @@ CONFIG_PACKAGE_luci-theme-infinityfreedom=y
 
 # passwall
 CONFIG_PACKAGE_luci-app-passwall=y
-CONFIG_PACKAGE_luci-app-passwall_Transparent_Proxy=y
+CONFIG_PACKAGE_luci-app-passwall_Iptables_Transparent_Proxy=y
+CONFIG_PACKAGE_luci-app-passwall_Nftables_Transparent_Proxy=y
 CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Brook=y
 CONFIG_PACKAGE_luci-app-passwall_INCLUDE_ChinaDNS_NG=y
 CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Haproxy=y
@@ -223,6 +228,7 @@ CONFIG_PACKAGE_luci-app-ttyd=y
 CONFIG_PACKAGE_luci-app-turboacc=y
 CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_OFFLOADING=y
 CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_BBR_CCA=y
+CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_PDNSD=y
 CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_DNSFORWARDER=y
 CONFIG_PACKAGE_luci-app-turboacc_INCLUDE_DNSPROXY=y
 
