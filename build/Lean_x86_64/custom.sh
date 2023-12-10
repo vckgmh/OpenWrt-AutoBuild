@@ -4,6 +4,9 @@
 # sed -i '$a src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall;packages' feeds.conf.default
 # sed -i '$a src-git passwall_luci https://github.com/xiaorouji/openwrt-passwall;luci' feeds.conf.default
 
+sed -i '$a src-git kenzo https://github.com/kenzok8/openwrt-packages' feeds.conf.default
+sed -i '$a src-git small https://github.com/kenzok8/small' feeds.conf.default
+
 # luci-theme-infinityfreedom
 # sed -i '$a src-git infinityfreedom https://github.com/xiaoqingfengATGH/luci-theme-infinityfreedom.git' feeds.conf.default
 
