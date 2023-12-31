@@ -167,9 +167,6 @@ CONFIG_VHDX_IMAGES=y
 
 # 去掉默认选中的插件结束
 
-# ipv6支持
-CONFIG_PACKAGE_ipv6helper=y
-
 # 主题
 # CONFIG_PACKAGE_luci-theme-material is not set
 # CONFIG_PACKAGE_luci-theme-netgear is not set
@@ -247,17 +244,19 @@ CONFIG_PACKAGE_luci-app-vlmcsd=y
 # WOL网络唤醒
 CONFIG_PACKAGE_luci-app-wol=y
 
-# vim编辑器
-CONFIG_PACKAGE_vim-full=y
-
-CONFIG_PACKAGE_openssh-sftp-server=y
-
 # uHTTPd Web服务器
 CONFIG_PACKAGE_luci-app-uhttpd=y
 
 # ZeroTier内网穿透
 CONFIG_PACKAGE_luci-app-zerotier=y
 
+# ipv6支持
+CONFIG_PACKAGE_ipv6helper=y
+
+# vim编辑器
+CONFIG_PACKAGE_vim-full=y
+
+CONFIG_PACKAGE_openssh-sftp-server=y
 EOF
 
 sed -i 's/^[ \t]*//g' ./.config
