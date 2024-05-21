@@ -45,7 +45,7 @@ jobs:
 
     steps:
       - name: 准备完成
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 查看服务器
         run: |
@@ -260,56 +260,56 @@ jobs:
 
       - name: 上传固件文件
         if: steps.organizer.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: OpenWrt_firmware_${{matrix.target}}_${{ env.FILE_TIME }}
           path: ./artifact/firmware/
 
       - name: 上传LiveCD镜像文件
         if: steps.organizer.outputs.status == 'success' && env.UPLOAD_ISO == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: OpenWrt_liveCD_${{matrix.target}}_${{ env.FILE_TIME }}
           path: ./artifact/liveCD/
 
       - name: 上传PVE/KVM镜像文件
         if: steps.organizer.outputs.status == 'success' && env.UPLOAD_QCOW2 == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: OpenWrt_pvekvm_${{matrix.target}}_${{ env.FILE_TIME }}
           path: ./artifact/pvekvm/
 
       - name: 上传Hyper-V镜像文件
         if: steps.organizer.outputs.status == 'success' && env.UPLOAD_VHDX == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: OpenWrt_hyperv_${{matrix.target}}_${{ env.FILE_TIME }}
           path: ./artifact/hyperv/
 
       - name: 上传VirtualBox镜像文件
         if: steps.organizer.outputs.status == 'success' && env.UPLOAD_VDI == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: OpenWrt_virtualbox_${{matrix.target}}_${{ env.FILE_TIME }}
           path: ./artifact/virtualbox/
 
       - name: 上传VMware镜像文件
         if: steps.organizer.outputs.status == 'success' && env.UPLOAD_VMDK == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: OpenWrt_vmware_${{matrix.target}}_${{ env.FILE_TIME }}
           path: ./artifact/vmware/
 
       - name: 上传插件包文件
         if: steps.organizer.outputs.status == 'success' && env.UPLOAD_IPK == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: OpenWrt_package_${{matrix.target}}_${{ env.FILE_TIME }}
           path: ./artifact/package/
 
       - name: 上传固件信息
         if: steps.organizer.outputs.status == 'success' && env.UPLOAD_CONFIG == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: OpenWrt_buildinfo_${{matrix.target}}_${{ env.FILE_TIME }}
           path: ./artifact/buildinfo/
@@ -361,7 +361,7 @@ jobs:
           token: ${{ secrets.GIT_USER_TOKEN }}
 
       - name: 删除自动发布的旧固件
-        uses: Vucko130/delete-older-releases@v0.2.1
+        uses: dev-drprasad/delete-older-releases@v0.3.4
         if: steps.organizer.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
         with:
           keep_latest: 30         #保留多少个releases不删除
